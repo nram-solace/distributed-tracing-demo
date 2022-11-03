@@ -1,0 +1,17 @@
+cd ~/Solace/distributed-tracing/tracing-pre
+
+Solace
+---
+docker start solace-10.2.0.21-DT
+
+
+OTEL
+---
+▶ docker run -v $PWD/otelcol:/etc/otelcol otel/opentelemetry-collector-contrib --config /etc/otelcol/docker-config.yaml
+
+
+Jaeger
+---
+docker run  jaegertracing/all-in-one
+
+

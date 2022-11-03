@@ -1,0 +1,32 @@
+home
+enable
+configure
+message-vpn default
+authentication basic auth-type internal
+exit
+client-username default message-vpn default
+password default
+exit
+client-profile default message-vpn default
+message-spool reject-msg-to-sender-on-no-subscription-match
+end
+
+configure
+message-vpn default
+create telemetry-profile trace
+receiver acl connect default-action allow
+no receiver shutdown
+trace
+no shutdown
+create filter default
+no shutdown
+create subscription ">"
+end
+
+configure
+create client-username trace message-vpn default
+password trace
+client-profile #telemetry-trace
+acl-profile #telemetry-trace
+no shutdown
+end
