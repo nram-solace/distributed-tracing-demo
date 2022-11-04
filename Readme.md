@@ -2,21 +2,22 @@
 
 nram, Solace PSG
 
-## About
+## 1. About
 
-Steps to setup and runs all required components for testing / demoing distributed tracing.  All components are run as docker containers.
+Steps to setup and runs all required components for testing / demoing [distributed tracing](https://docs.solace.com/Features/Distributed-Tracing/Distributed-Tracing-Overview.htm) with [Solace PubSub+ Event Broker](https://solace.com/products/event-broker/)
 
-Components:
+### Whats required
 
-- Solace broker (10.2.0.21 or later)
-- Open telemetry collector with solace receiver (otel-collector-contrib)
-- Jaeger UI
+- [Solace event broker](https://solace.com/products/event-broker/) (10.2.0.21 or later)
+- [Open telemetry collector](https://opentelemetry.io/docs/collector/) with [solace receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/solacereceiver) ([otel-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib))
+- [Jaeger UI](https://www.jaegertracing.io/docs/1.38/)
+- [Solace SDKPerf](https://docs.solace.com/API/SDKPerf/SDKPerf.htm) : Tool to generate load
 
-## Solace Broker
+## 2. Solace Event Broker setup
 
-Get SolOS 10.2.0.21 or later.
+Get [SolOS 10.2.0.21](https://filedrop.solace.com/products/10.-Preview/PubSub_Ent/Current/10.2.0.21/) or later.
 
-https://filedrop.solace.com/products/10.2-Preview/PubSub_Ent/Current/10.2.0.21/
+
 
 ``` sh
 ▶ docker start solace-10.2.0.21-DT
@@ -24,52 +25,16 @@ https://filedrop.solace.com/products/10.2-Preview/PubSub_Ent/Current/10.2.0.21/
 
 ### Setting up telemetry profiles:
 
-Run setup-dt.cli from CLI shell
+Run [setup-dt.cli](solace/setup-dt.cli) from CLI shell
 
 ``` sh
 solace-102021-DT> source script setup-dt.cli stop-on-error no-prompt
 ```
 
-``` sh
-▶ cat jail/cliscripts/setup-dt.cli
-home
-enable
-configure
-message-vpn default
-authentication basic auth-type internal
-exit
-client-username default message-vpn default
-password default
-exit
-client-profile default message-vpn default
-message-spool reject-msg-to-sender-on-no-subscription-match
-end
-
-configure
-message-vpn default
-create telemetry-profile trace
-receiver acl connect default-action allow
-no receiver shutdown
-trace
-no shutdown
-create filter default
-no shutdown
-create subscription ">"
-end
-
-configure
-create client-username trace message-vpn default
-password trace
-client-profile #telemetry-trace
-acl-profile #telemetry-trace
-no shutdown
-end%
-```
-
 looks like this can be done via UI also
 ![Solace ui](img/solace-ui-1.png)
 
-## Open telemetry Collector
+## 3. Open telemetry Collector setup
 
 ### Using docker
 
@@ -90,14 +55,14 @@ See [docker-config.yaml](otelcol/docker-config.yaml) that uses docker.for.mac.ho
 ```
 See [otel-collector-config.yaml](otelcol/otel-collector-config.yaml)
 
-## Jaeger
+## 4. Jaeger UI Setup
 
 ``` sh
 docker pull jaegertracing/all-in-one
 docker run  jaegertracing/all-in-one
 ```
 
-## Verify
+## 5. Verify
 
 ``` sh
 ▶ docker ps
